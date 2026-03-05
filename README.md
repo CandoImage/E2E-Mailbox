@@ -2,7 +2,7 @@
 
 # E2E Mailbox
 
-E2E test your email notification system using [DeveloperMail API](https://www.developermail.com/) and [GuerrillaMail API](https://www.guerrillamail.com/).
+E2E test your email notification system using [DeveloperMail API](https://www.developermail.com/), [GuerrillaMail API](https://www.guerrillamail.com/), and [MailDrop API](https://maildrop.cc/).
 
 ## Description
 
@@ -13,7 +13,15 @@ A fully-typed and tested TS library for adding email notification testing to you
 - Fetching a reset password pin from an email
 - Ensuring your system sends the correct email after an action is committed on your website
 
-Configurable to use either DeveloperMail or GuerrillaMail as the temporary mailbox providers. These are free services generously provided to create short-lived email addresses. If one provider is not working, the other will be used automatically to prevent disruption.
+Configurable to use DeveloperMail, GuerrillaMail, or MailDrop as the temporary mailbox provider. These are free services generously provided to create short-lived email addresses. If one provider is not working, the other will be used automatically to prevent disruption.
+
+## Providers
+
+| Provider | Key | Send Self Mail | Notes |
+|---|---|---|---|
+| [DeveloperMail](https://www.developermail.com/) | `DEVELOPER` | ✅ | Default provider |
+| [GuerrillaMail](https://www.guerrillamail.com/) | `GUERRILLA` | ❌ | |
+| [MailDrop](https://maildrop.cc/) | `MAILDROP` | ❌ | Receive-only; rate limited to 50 queries per 10-second window |
 
 ## Usage
 
@@ -33,7 +41,7 @@ yarn add e2e-mailbox
 ```js
 import E2EMailbox from 'e2e-mailbox';
 // This will create a new mailbox using DeveloperMail API as the provider.
-// To set GuerrillaMail, pass 'GUERRILLA' to the constructor.
+// To use GuerrillaMail, pass 'GUERRILLA'. To use MailDrop, pass 'MAILDROP'.
 const mailbox = new E2EMailbox();
 // This will generate a new email address for you to use in your tests
 const emailAddress = await mailbox.createEmailAddress();

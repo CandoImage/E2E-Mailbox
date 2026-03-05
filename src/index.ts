@@ -1,5 +1,6 @@
 import DeveloperMailService from './services/developerMailService';
 import GuerrillaMailService from './services/guerrillaMailService';
+import MailDropService from './services/mailDropService';
 import MailboxService from './services/mailboxService';
 import { EmailResponse, MailboxProvider } from './types';
 
@@ -7,7 +8,8 @@ export default class IntegrationMailbox {
 
     private mailboxProviders: Record<MailboxProvider, MailboxService> = {
         'GUERRILLA': new GuerrillaMailService(),
-        'DEVELOPER': new DeveloperMailService()
+        'DEVELOPER': new DeveloperMailService(),
+        'MAILDROP': new MailDropService()
     }
 
     private mailbox: MailboxService;

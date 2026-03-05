@@ -1,4 +1,4 @@
-export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA';
+export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP';
 
 export interface CreateEmailResponse {
     email_addr: string;
