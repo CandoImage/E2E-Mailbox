@@ -5,9 +5,8 @@ import MailboxService from './mailboxService';
 interface MailDropMessage {
     id: string;
     subject: string;
-    from: string;
+    headerfrom: string;
     date: string;
-    intro: string;
 }
 
 interface MailDropFullMessage extends MailDropMessage {
@@ -74,10 +73,10 @@ class MailDropService extends MailboxService {
     private static toEmailResponse(msg: MailDropMessage, body = ''): EmailResponse {
         return {
             mail_id: msg.id,
-            mail_from: msg.from,
+            mail_from: msg.headerfrom,
             mail_timestamp: msg.date,
             mail_subject: msg.subject,
-            mail_excerpt: msg.intro,
+            mail_excerpt: '',
             mail_body: body,
         };
     }
@@ -93,6 +92,11 @@ class MailDropService extends MailboxService {
         return `${this.mailboxName}@${EMAIL_DOMAIN}`;
     }
 
+    async setEmailAddress(emailAddress: string): Promise<boolean | undefined> {
+      this.mailboxName = emailAddress.split('@')[0];
+      return true;
+    }
+
     /**
      * Get the current list of emails from the MailDrop inbox.
      * @returns Array of emails
@@ -103,9 +107,8 @@ class MailDropService extends MailboxService {
                 inbox(mailbox: $mailbox) {
                     id
                     subject
-                    from
+                    headerfrom
                     date
-                    intro
                 }
             }
         `;
@@ -155,10 +158,10 @@ class MailDropService extends MailboxService {
                 message(mailbox: $mailbox, id: $id) {
                     id
                     subject
-                    from
+                    headerfrom
                     date
                     html
-                    intro
+                    data
                 }
             }
         `;
