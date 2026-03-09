@@ -55,6 +55,8 @@ abstract class MailboxService {
      */
     abstract sendSelfMail(subject: string, body: string): Promise<boolean>
 
+    abstract setEmailAddress(emailAddress: string): Promise<any | undefined>;
+
 }
 
 export default MailboxService;

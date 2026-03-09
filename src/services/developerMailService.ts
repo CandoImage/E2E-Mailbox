@@ -197,6 +197,10 @@ class DeveloperMailService extends MailboxService {
         );
         return !!response?.data?.result;
     }
+
+    async setEmailAddress(emailAddress: string): Promise<any | undefined> {
+     return false;
+    }
 }
 
 export default DeveloperMailService;

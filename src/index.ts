@@ -44,6 +44,14 @@ export default class IntegrationMailbox {
       }
     }
 
+    async setEmailAddress(emailAddress: string): Promise<any | undefined> {
+      if (this.mailbox.setEmailAddress) {
+        this.mailbox.setEmailAddress(emailAddress);
+        return true;
+      }
+      return false;
+    }
+
     /**
      * Send an email to this mailbox. Only works for the DeveloperMail provider.
      * @param subject
