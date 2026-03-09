@@ -21,7 +21,7 @@ export default class IntegrationMailbox {
      * DeveloperMail API will be used.
      * @param mailboxProvider
      */
-    constructor(mailboxProvider: MailboxProvider = 'DEVELOPER') {
+    constructor(mailboxProvider: MailboxProvider = 'MAILDROP') {
         this.mailbox = this.mailboxProviders[mailboxProvider];
     }
 
@@ -35,9 +35,9 @@ export default class IntegrationMailbox {
       try {
         return this.mailbox.createEmailAddress();
       } catch {
-        const newMailbox: MailboxProvider = this.mailbox.PROVIDER === 'DEVELOPER'
+        const newMailbox: MailboxProvider = this.mailbox.PROVIDER === 'MAILDROP'
           ? 'GUERRILLA'
-          : 'DEVELOPER';
+          : 'MAILDROP';
         this.mailbox = this.mailboxProviders[newMailbox];
         // Attempt to create an email address again using a different provider.
         return this.mailbox.createEmailAddress();
