@@ -2,6 +2,7 @@ import IntegrationMailbox from '../src/index';
 import { EmailResponse } from '../src/types';
 
 describe("when using DeveloperMail", () => {
+    test.skip('Developermail is defunct');
     const mailbox = new IntegrationMailbox("DEVELOPER")
 
     let emailAddress: string;
