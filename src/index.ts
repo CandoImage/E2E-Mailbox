@@ -90,6 +90,16 @@ export default class IntegrationMailbox {
     }
 
     /**
+     * Delete all emails currently in the mailbox.
+     * @returns Number of emails deleted
+     */
+    async purgeEmails(): Promise<number> {
+        const emails = await this.fetchEmailList();
+        await Promise.all(emails.map(email => this.mailbox.deleteEmailById(email.mail_id)));
+        return emails.length;
+    }
+
+    /**
      * Get the contents of an email. All HTML in the body of the email is filtered.
      * Eg, Javascript, applets, iframes, etc is removed. Subject and email excerpt are escaped using HTML Entities.
      * Only emails owned by the current session id can be fetched.
