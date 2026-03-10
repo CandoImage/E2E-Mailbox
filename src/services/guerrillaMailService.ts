@@ -82,6 +82,9 @@ class GuerrillaMailService extends MailboxService {
         const payload = { f: 'set_email_user', lang: 'en', email_user: emailUsername };
         const response = await this.sendRequest(payload);
         if (!response) { return; }
+        if (!this.sidToken && response.data?.sid_token) {
+          this.sidToken = response.data.sid_token;
+        }
         return response.data;
     }
 
