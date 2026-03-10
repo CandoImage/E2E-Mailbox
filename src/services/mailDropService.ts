@@ -74,7 +74,7 @@ class MailDropService extends MailboxService {
         return {
             mail_id: msg.id,
             mail_from: msg.headerfrom,
-            mail_timestamp: msg.date,
+            mail_timestamp: new Date(msg.date).getTime(),
             mail_subject: msg.subject,
             mail_excerpt: '',
             mail_body: body,

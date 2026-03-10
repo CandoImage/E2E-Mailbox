@@ -129,7 +129,7 @@ export default class IntegrationMailbox {
             try { emails = await this.fetchEmailList(); } catch(e) { throw new Error(`Failed fetching email list: ${e}`); }
 
             for (const email of emails) {
-                if (receivedAfter && new Date(email.mail_timestamp) <= receivedAfter) {
+                if (receivedAfter && email.mail_timestamp <= receivedAfter.getTime()) {
                     continue;
                 }
                 if (email.mail_subject.includes(subjectLine)) {

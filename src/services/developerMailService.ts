@@ -85,7 +85,7 @@ class DeveloperMailService extends MailboxService {
     private static async convertMimeToEmailResponse(message: string, mailId: string): Promise<EmailResponse> {
         const parsedMessage: ParsedMail = await simpleParser(message);
         const messageFrom = !!parsedMessage.from ? parsedMessage.from.text : '';
-        const messageDate = parsedMessage.date ? `${parsedMessage.date.getTime()}` : '';
+        const messageDate = parsedMessage.date ? parsedMessage.date.getTime() : 0;
         const messageSubject = parsedMessage.subject || '';
         const messageBody = parsedMessage.html || '';
         // v1.0 read model was tied to GuerrillaMail's response type, for

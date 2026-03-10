@@ -63,7 +63,10 @@ class GuerrillaMailService extends MailboxService {
         const response = await this.sendRequest(payload);
         if (!response) { return emailList; }
         const emailListResponse: EmailListResponse = response.data;
-        emailList = emailListResponse.list;
+        emailList = emailListResponse.list.map(email => ({
+            ...email,
+            mail_timestamp: Number(email.mail_timestamp) * 1000,
+        }));
         return emailList;
     }
 
@@ -127,7 +130,8 @@ class GuerrillaMailService extends MailboxService {
         const payload = { f: 'fetch_email', email_id: emailId };
         const response = await this.sendRequest(payload);
         if (!response) { return; }
-        return response.data;
+        const email: EmailResponse = response.data;
+        return { ...email, mail_timestamp: Number(email.mail_timestamp) * 1000 };
     }
 
     sendSelfMail(subject: string, body: string): Promise<boolean> {

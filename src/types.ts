@@ -14,7 +14,7 @@ export interface EmailListResponse {
 export interface EmailResponse {
     mail_id: string;
     mail_from: string;
-    mail_timestamp: string;
+    mail_timestamp: number;
     mail_subject: string;
     mail_excerpt: string;
     mail_body: string;
