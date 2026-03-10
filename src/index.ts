@@ -128,16 +128,16 @@ export default class IntegrationMailbox {
             let emails: EmailResponse[] = [];
             try { emails = await this.fetchEmailList(); } catch(e) { throw new Error(`Failed fetching email list: ${e}`); }
 
-            // eslint-disable-next-line no-loop-func
-            emails.forEach((email) => {
+            for (const email of emails) {
                 if (receivedAfter && new Date(email.mail_timestamp) <= receivedAfter) {
-                    return;
+                    continue;
                 }
                 if (email.mail_subject.includes(subjectLine)) {
                     hasEmailArrived = true;
                     foundEmail = email;
+                    break;
                 }
-            });
+            };
             // If email hasn't arrived yet, wait and add time to elapsed time.
             if (!hasEmailArrived) {
                 await this.mailbox.sleep(INCREMENT);
