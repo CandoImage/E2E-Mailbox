@@ -55,7 +55,13 @@ abstract class MailboxService {
      */
     abstract sendSelfMail(subject: string, body: string): Promise<boolean>
 
-    abstract setEmailAddress(emailAddress: string): Promise<any | undefined>;
+  /**
+   * Set the email address to a different email address.
+   *
+   * @param emailAddress
+   * @returns A `boolean` representing success or failure.
+   */
+  abstract setEmailAddress(emailAddress: string): Promise<boolean>;
 
 }
 

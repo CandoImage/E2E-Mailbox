@@ -92,7 +92,7 @@ class MailDropService extends MailboxService {
         return `${this.mailboxName}@${EMAIL_DOMAIN}`;
     }
 
-    async setEmailAddress(emailAddress: string): Promise<boolean | undefined> {
+    async setEmailAddress(emailAddress: string): Promise<boolean> {
       this.mailboxName = emailAddress.split('@')[0];
       return true;
     }

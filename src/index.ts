@@ -44,10 +44,9 @@ export default class IntegrationMailbox {
       }
     }
 
-    async setEmailAddress(emailAddress: string): Promise<any | undefined> {
+    async setEmailAddress(emailAddress: string): Promise<boolean> {
       if (this.mailbox.setEmailAddress) {
-        this.mailbox.setEmailAddress(emailAddress);
-        return true;
+        return this.mailbox.setEmailAddress(emailAddress);
       }
       return false;
     }

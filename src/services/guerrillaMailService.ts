@@ -76,16 +76,16 @@ class GuerrillaMailService extends MailboxService {
      * @param emailAddress
      * @returns True on success, false on failure
      */
-    async setEmailAddress(emailAddress: string): Promise<SetEmailResponse | undefined> {
+    async setEmailAddress(emailAddress: string): Promise<boolean> {
         // If a full email is passed, only use the username portion.
         const emailUsername = emailAddress.split('@')[0];
         const payload = { f: 'set_email_user', lang: 'en', email_user: emailUsername };
         const response = await this.sendRequest(payload);
-        if (!response) { return; }
+        if (!response) { return false; }
         if (!this.sidToken && response.data?.sid_token) {
           this.sidToken = response.data.sid_token;
         }
-        return response.data;
+        return !!response.data;
     }
 
     /**
