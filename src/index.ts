@@ -114,9 +114,10 @@ export default class IntegrationMailbox {
      * Wait for email to arrive in inbox, and return the fetched email
      * @param subjectLine - the subject line belonging to the email.
      * @param maxLimitInSec - the max time to wait for the email to arrive, default is 60 seconds.
+     * @param receivedAfter - if provided, only emails with a timestamp after this date are considered.
      * @returns EmailResponse | undefined
      */
-    async waitForEmail(subjectLine: string, maxLimitInSec = 60): Promise<EmailResponse | undefined> {
+    async waitForEmail(subjectLine: string, maxLimitInSec = 60, receivedAfter?: Date): Promise<EmailResponse | undefined> {
         let hasEmailArrived = false;
         let elapsedTime = 0;
         let foundEmail: EmailResponse | undefined;
@@ -130,6 +131,9 @@ export default class IntegrationMailbox {
 
             // eslint-disable-next-line no-loop-func
             emails.forEach((email) => {
+                if (receivedAfter && new Date(email.mail_timestamp) <= receivedAfter) {
+                    return;
+                }
                 if (email.mail_subject.includes(subjectLine)) {
                     hasEmailArrived = true;
                     foundEmail = email;
