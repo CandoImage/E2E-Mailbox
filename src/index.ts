@@ -20,7 +20,7 @@ export default class IntegrationMailbox {
 
     /**
      * Creates a mailbox session with the designated provider. By default,
-     * DeveloperMail API will be used.
+     * MailDrop API will be used.
      * @param mailboxProvider
      */
     constructor(mailboxProvider: MailboxProvider = 'MAILDROP') {

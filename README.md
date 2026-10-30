@@ -19,9 +19,9 @@ Configurable to use DeveloperMail, GuerrillaMail, MailDrop, or Ethereal as the t
 
 | Provider | Key | Send Self Mail | Notes |
 |---|---|---|---|
-| [DeveloperMail](https://www.developermail.com/) | `DEVELOPER` | ✅ | Default provider |
+| [DeveloperMail](https://www.developermail.com/) | `DEVELOPER` | ✅ | |
 | [GuerrillaMail](https://www.guerrillamail.com/) | `GUERRILLA` | ❌ | |
-| [MailDrop](https://maildrop.cc/) | `MAILDROP` | ❌ | Receive-only; rate limited to 50 queries per 10-second window |
+| [MailDrop](https://maildrop.cc/) | `MAILDROP` | ❌ | Default provider. Receive-only; rate limited to 50 queries per 10-second window |
 | [Ethereal](https://ethereal.email/) | `ETHEREAL` | ✅ | Captures mail sent through its SMTP server instead of receiving it, see [below](#using-ethereal) |
 
 ## Usage
@@ -41,8 +41,8 @@ yarn add e2e-mailbox
 
 ```js
 import E2EMailbox from 'e2e-mailbox';
-// This will create a new mailbox using DeveloperMail API as the provider.
-// To use GuerrillaMail, pass 'GUERRILLA'. To use MailDrop, pass 'MAILDROP'. To use Ethereal, pass 'ETHEREAL'.
+// This will create a new mailbox using MailDrop API as the provider.
+// To use DeveloperMail, pass 'DEVELOPER'. To use GuerrillaMail, pass 'GUERRILLA'. To use Ethereal, pass 'ETHEREAL'.
 const mailbox = new E2EMailbox();
 // This will generate a new email address for you to use in your tests
 const emailAddress = await mailbox.createEmailAddress();
