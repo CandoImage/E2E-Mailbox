@@ -1,4 +1,4 @@
-import { EmailResponse, MailboxProvider } from '../types';
+import { EmailResponse, MailboxProvider, SmtpConfig } from '../types';
 
 abstract class MailboxService {
     abstract API_URL: string;
@@ -59,9 +59,19 @@ abstract class MailboxService {
    * Set the email address to a different email address.
    *
    * @param emailAddress
+   * @param password - only required by providers with password protected mailboxes, eg. Ethereal.
    * @returns A `boolean` representing success or failure.
    */
-  abstract setEmailAddress(emailAddress: string): Promise<boolean>;
+  abstract setEmailAddress(emailAddress: string, password?: string): Promise<boolean>;
+
+    /**
+     * SMTP credentials the system under test has to use for its mails to be captured.
+     * Only available for the Ethereal provider.
+     * @returns SmtpConfig, or undefined if the provider receives mail via public MX.
+     */
+    getSmtpConfig(): SmtpConfig | undefined {
+        return;
+    }
 
 }
 

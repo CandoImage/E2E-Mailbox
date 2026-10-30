@@ -1,4 +1,12 @@
-export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP';
+export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP' | 'ETHEREAL';
+
+export interface SmtpConfig {
+    host: string;
+    port: number;
+    secure: boolean;
+    user: string;
+    pass: string;
+}
 
 export interface CreateEmailResponse {
     email_addr: string;

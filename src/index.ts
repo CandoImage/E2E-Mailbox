@@ -1,15 +1,17 @@
 import DeveloperMailService from './services/developerMailService';
+import EtherealMailService from './services/etherealMailService';
 import GuerrillaMailService from './services/guerrillaMailService';
 import MailDropService from './services/mailDropService';
 import MailboxService from './services/mailboxService';
-import { EmailResponse, MailboxProvider } from './types';
+import { EmailResponse, MailboxProvider, SmtpConfig } from './types';
 
 export default class IntegrationMailbox {
 
     private mailboxProviders: Record<MailboxProvider, MailboxService> = {
         'GUERRILLA': new GuerrillaMailService(),
         'DEVELOPER': new DeveloperMailService(),
-        'MAILDROP': new MailDropService()
+        'MAILDROP': new MailDropService(),
+        'ETHEREAL': new EtherealMailService()
     }
 
     private mailbox: MailboxService;
@@ -28,13 +30,17 @@ export default class IntegrationMailbox {
     /**
      * Initialize a session and set the client with an email address.
      * If one email service is not working, the backup will be used
-     * automatically to prevent disruption.
+     * automatically to prevent disruption. Ethereal has no backup, as the
+     * other providers can't capture mail sent through its SMTP server.
      * @returns email address
      */
     async createEmailAddress(): Promise<string> {
       try {
-        return this.mailbox.createEmailAddress();
-      } catch {
+        return await this.mailbox.createEmailAddress();
+      } catch (error) {
+        if (this.mailbox.PROVIDER === 'ETHEREAL') {
+          throw error;
+        }
         const newMailbox: MailboxProvider = this.mailbox.PROVIDER === 'MAILDROP'
           ? 'GUERRILLA'
           : 'MAILDROP';
@@ -44,15 +50,30 @@ export default class IntegrationMailbox {
       }
     }
 
-    async setEmailAddress(emailAddress: string): Promise<boolean> {
+    /**
+     * Re-use an existing email address.
+     * @param emailAddress
+     * @param password - only required by the Ethereal provider.
+     * @returns A `boolean` representing success or failure.
+     */
+    async setEmailAddress(emailAddress: string, password?: string): Promise<boolean> {
       if (this.mailbox.setEmailAddress) {
-        return this.mailbox.setEmailAddress(emailAddress);
+        return this.mailbox.setEmailAddress(emailAddress, password);
       }
       return false;
     }
 
     /**
-     * Send an email to this mailbox. Only works for the DeveloperMail provider.
+     * SMTP credentials the system under test has to send its mails through. Only
+     * available for the Ethereal provider, which captures mail instead of receiving it.
+     * @returns SmtpConfig, or undefined for the other providers.
+     */
+    getSmtpConfig(): SmtpConfig | undefined {
+        return this.mailbox.getSmtpConfig();
+    }
+
+    /**
+     * Send an email to this mailbox. Only works for the DeveloperMail and Ethereal providers.
      * @param subject
      * @param body
      * @returns A `boolean` representing success or failure.

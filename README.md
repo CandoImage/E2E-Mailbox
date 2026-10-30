@@ -2,7 +2,7 @@
 
 # E2E Mailbox
 
-E2E test your email notification system using [DeveloperMail API](https://www.developermail.com/), [GuerrillaMail API](https://www.guerrillamail.com/), and [MailDrop API](https://maildrop.cc/).
+E2E test your email notification system using [DeveloperMail API](https://www.developermail.com/), [GuerrillaMail API](https://www.guerrillamail.com/), [MailDrop API](https://maildrop.cc/), and [Ethereal](https://ethereal.email/).
 
 ## Description
 
@@ -13,7 +13,7 @@ A fully-typed and tested TS library for adding email notification testing to you
 - Fetching a reset password pin from an email
 - Ensuring your system sends the correct email after an action is committed on your website
 
-Configurable to use DeveloperMail, GuerrillaMail, or MailDrop as the temporary mailbox provider. These are free services generously provided to create short-lived email addresses. If one provider is not working, the other will be used automatically to prevent disruption.
+Configurable to use DeveloperMail, GuerrillaMail, MailDrop, or Ethereal as the temporary mailbox provider. These are free services generously provided to create short-lived email addresses. If one provider is not working, the other will be used automatically to prevent disruption.
 
 ## Providers
 
@@ -22,6 +22,7 @@ Configurable to use DeveloperMail, GuerrillaMail, or MailDrop as the temporary m
 | [DeveloperMail](https://www.developermail.com/) | `DEVELOPER` | ✅ | Default provider |
 | [GuerrillaMail](https://www.guerrillamail.com/) | `GUERRILLA` | ❌ | |
 | [MailDrop](https://maildrop.cc/) | `MAILDROP` | ❌ | Receive-only; rate limited to 50 queries per 10-second window |
+| [Ethereal](https://ethereal.email/) | `ETHEREAL` | ✅ | Captures mail sent through its SMTP server instead of receiving it, see [below](#using-ethereal) |
 
 ## Usage
 
@@ -41,7 +42,7 @@ yarn add e2e-mailbox
 ```js
 import E2EMailbox from 'e2e-mailbox';
 // This will create a new mailbox using DeveloperMail API as the provider.
-// To use GuerrillaMail, pass 'GUERRILLA'. To use MailDrop, pass 'MAILDROP'.
+// To use GuerrillaMail, pass 'GUERRILLA'. To use MailDrop, pass 'MAILDROP'. To use Ethereal, pass 'ETHEREAL'.
 const mailbox = new E2EMailbox();
 // This will generate a new email address for you to use in your tests
 const emailAddress = await mailbox.createEmailAddress();
@@ -84,6 +85,27 @@ const fullEmail = await mailbox.fetchEmailById(emailID);
 ```js
 const isEmailDeleted = await mailbox.deleteEmailById(email.mail_id);
 ```
+
+#### Using Ethereal
+
+[Ethereal](https://ethereal.email/) is a fake SMTP service: it never delivers mail and has no public MX. Instead, every
+message sent through an account's SMTP server is captured in that account's inbox, whatever the recipient is. This
+makes it a good fit when you control the SMTP settings of the system under test, as nothing leaves the sandbox.
+
+```js
+const mailbox = new E2EMailbox('ETHEREAL');
+const emailAddress = await mailbox.createEmailAddress();
+// Configure the system under test to send its mails through these credentials.
+const { host, port, secure, user, pass } = mailbox.getSmtpConfig();
+```
+
+Ethereal accounts are password protected, so re-using an existing one requires its password:
+
+```js
+await mailbox.setEmailAddress(emailAddress, pass);
+```
+
+Ethereal has no API to delete an account; `forgetEmailAddress()` only clears the local credentials.
 
 ### Example Usage in Tests
 
