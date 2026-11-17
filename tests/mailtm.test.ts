@@ -1,7 +1,12 @@
 import IntegrationMailbox from '../src/index';
+import { MailboxProvider } from '../src/types';
 
-describe("when using Mail.tm", () => {
-    const mailbox = new IntegrationMailbox("MAILTM")
+// Mail.gw runs the same API as Mail.tm. Its API was down when the provider was added
+// (api.mail.gw refused connections), so its suite only runs with MAILGW_TEST set.
+const providers: MailboxProvider[] = process.env.MAILGW_TEST ? ['MAILTM', 'MAILGW'] : ['MAILTM'];
+
+describe.each<MailboxProvider>(providers)("when using %s", (provider) => {
+    const mailbox = new IntegrationMailbox(provider)
 
     let emailAddress: string;
     let password: string | undefined;
@@ -27,7 +32,7 @@ describe("when using Mail.tm", () => {
     });
 
     it('should be able to reuse a mailbox', async () => {
-        const otherMailbox = new IntegrationMailbox("MAILTM");
+        const otherMailbox = new IntegrationMailbox(provider);
         expect(await otherMailbox.setEmailAddress(emailAddress)).toBeFalsy();
         expect(await otherMailbox.setEmailAddress(emailAddress, 'wrong-password')).toBeFalsy();
         expect(await otherMailbox.setEmailAddress(emailAddress, password)).toBeTruthy();
@@ -35,7 +40,7 @@ describe("when using Mail.tm", () => {
     });
 
     it('should set a chosen email address', async () => {
-        const chosenMailbox = new IntegrationMailbox("MAILTM");
+        const chosenMailbox = new IntegrationMailbox(provider);
         const localPart = 'e2e-' + Math.random().toString(36).substring(2, 10);
         const chosenPassword = 'pw-' + Math.random().toString(36).substring(2);
         expect(await chosenMailbox.setEmailAddress(localPart, chosenPassword)).toBeTruthy();
@@ -48,7 +53,7 @@ describe("when using Mail.tm", () => {
         expect(await mailbox.forgetEmailAddress(emailAddress)).toBeTruthy();
         expect(mailbox.getPassword()).toBeUndefined();
         // The account is deleted, so it can't be logged into anymore.
-        const otherMailbox = new IntegrationMailbox("MAILTM");
+        const otherMailbox = new IntegrationMailbox(provider);
         expect(await otherMailbox.setEmailAddress(emailAddress, 'wrong-password')).toBeFalsy();
     });
 })

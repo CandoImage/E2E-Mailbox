@@ -132,8 +132,8 @@ class MailTmService extends MailboxService {
 
     /**
      * Use the given address. Logs into the account if it exists, otherwise the account is
-     * created with the given password. The domain has to be one Mail.tm offers, see
-     * https://api.mail.tm/domains. If only a local part is given, the current domain is used.
+     * created with the given password. The domain has to be one the service offers, see
+     * https://api.mail.tm/domains or https://api.mail.gw/domains. If only a local part is given, the current domain is used.
      * @param emailAddress
      * @param password - required, Mail.tm accounts are password protected.
      * @returns True on success, false on wrong password or unavailable domain.
@@ -193,7 +193,7 @@ class MailTmService extends MailboxService {
     }
 
     sendSelfMail(_subject: string, _body: string): Promise<boolean> {
-        throw new Error('Method not implemented for the Mail.tm provider.');
+        throw new Error(`Method not implemented for the ${this.PROVIDER} provider.`);
     }
 }
 

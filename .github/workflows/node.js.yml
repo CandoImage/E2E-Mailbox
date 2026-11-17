@@ -14,13 +14,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Self-hosted catch-all SMTP server for the Inbucket test suite.
+    # Self-hosted catch-all SMTP servers for the Inbucket and Mailpit test suites.
     services:
       inbucket:
         image: inbucket/inbucket
         ports:
           - 9000:9000
           - 2500:2500
+      mailpit:
+        image: axllent/mailpit
+        ports:
+          - 8025:8025
+          - 1025:1025
 
     strategy:
       matrix:
@@ -41,5 +46,6 @@ jobs:
     - run: yarn test
       env:
         INBUCKET_URL: http://localhost:9000
+        MAILPIT_URL: http://localhost:8025
         # Optional, the Mailsac suite is skipped without it.
         MAILSAC_API_KEY: ${{ secrets.MAILSAC_API_KEY }}
