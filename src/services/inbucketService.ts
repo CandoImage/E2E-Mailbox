@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as nodemailer from 'nodemailer';
 import { EmailResponse, InbucketOptions, MailboxProvider, SmtpConfig } from '../types';
 import MailboxService from './mailboxService';
+import { resolveSelfHostedOptions } from './selfHostedOptions';
 
 interface InbucketMessage {
     mailbox: string;
@@ -35,10 +36,11 @@ class InbucketService extends MailboxService {
 
     constructor(options: InbucketOptions = {}) {
         super();
-        this.API_URL = (options.url || process.env.INBUCKET_URL || 'http://localhost:9000').replace(/\/+$/, '');
-        this.domain = options.domain || process.env.INBUCKET_DOMAIN || 'inbucket.local';
-        this.smtpHost = options.smtpHost || process.env.INBUCKET_SMTP_HOST || new URL(this.API_URL).hostname;
-        this.smtpPort = options.smtpPort || Number(process.env.INBUCKET_SMTP_PORT) || 2500;
+        const config = resolveSelfHostedOptions('INBUCKET', options, 'http://localhost:9000', 'inbucket.local', 2500);
+        this.API_URL = config.url;
+        this.domain = config.domain;
+        this.smtpHost = config.smtpHost;
+        this.smtpPort = config.smtpPort;
     }
 
     private async sendRequest<T>(config: AxiosRequestConfig): Promise<AxiosResponse<T> | undefined> {

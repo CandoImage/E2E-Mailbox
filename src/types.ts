@@ -1,24 +1,41 @@
-export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP' | 'ETHEREAL' | 'MAILTM' | 'MAILSAC' | 'INBUCKET';
+export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP' | 'ETHEREAL' | 'MAILTM' | 'MAILGW' | 'MAILSAC' | 'HARAKIRI' | 'TESTMAIL' | 'INBUCKET' | 'MAILPIT';
 
 export interface MailsacOptions {
     /** Mailsac API key, falls back to the MAILSAC_API_KEY environment variable. */
     apiKey?: string;
 }
 
-export interface InbucketOptions {
-    /** Base URL of the Inbucket web UI / REST API, falls back to INBUCKET_URL or http://localhost:9000. */
+export interface TestmailOptions {
+    /** testmail.app API key, falls back to the TESTMAIL_API_KEY environment variable. */
+    apiKey?: string;
+    /** testmail.app namespace, falls back to the TESTMAIL_NAMESPACE environment variable. */
+    namespace?: string;
+}
+
+/**
+ * Configuration of a self-hosted catch-all SMTP server. Each option falls back to the
+ * <PROVIDER>_URL, <PROVIDER>_DOMAIN, <PROVIDER>_SMTP_HOST and <PROVIDER>_SMTP_PORT
+ * environment variables, eg. INBUCKET_URL or MAILPIT_URL, then to the provider default.
+ */
+export interface SelfHostedOptions {
+    /** Base URL of the web UI / REST API. Default Inbucket: http://localhost:9000, Mailpit: http://localhost:8025 */
     url?: string;
-    /** Domain used for generated addresses, falls back to INBUCKET_DOMAIN or inbucket.local. */
+    /** Domain used for generated addresses. Default: inbucket.local / mailpit.local */
     domain?: string;
-    /** SMTP host, falls back to INBUCKET_SMTP_HOST or the host of the url. */
+    /** SMTP host. Default: the host of the url. */
     smtpHost?: string;
-    /** SMTP port, falls back to INBUCKET_SMTP_PORT or 2500. */
+    /** SMTP port. Default Inbucket: 2500, Mailpit: 1025 */
     smtpPort?: number;
 }
 
+export type InbucketOptions = SelfHostedOptions;
+export type MailpitOptions = SelfHostedOptions;
+
 export interface MailboxOptions {
     mailsac?: MailsacOptions;
+    testmail?: TestmailOptions;
     inbucket?: InbucketOptions;
+    mailpit?: MailpitOptions;
 }
 
 export interface SmtpConfig {

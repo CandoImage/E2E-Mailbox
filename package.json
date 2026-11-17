@@ -1,7 +1,7 @@
 {
   "name": "e2e-mailbox",
   "version": "2.0.0",
-  "description": "E2E test your email notification system using MailDrop, GuerrillaMail, DeveloperMail, Mail.tm, Mailsac, Ethereal and Inbucket.",
+  "description": "E2E test your email notification system using MailDrop, GuerrillaMail, DeveloperMail, Mail.tm, Mail.gw, Mailsac, Harakiri Mail, testmail.app, Ethereal, Inbucket and Mailpit.",
   "main": "dist/lib/index.js",
   "module": "dist/esm/index.mjs",
   "exports": {
@@ -24,6 +24,10 @@
     "mailtm",
     "mailsac",
     "inbucket",
+    "mailgw",
+    "harakirimail",
+    "mailpit",
+    "testmail",
     "integration"
   ],
   "repository": {

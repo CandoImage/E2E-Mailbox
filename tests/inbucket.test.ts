@@ -4,6 +4,7 @@ import { EmailResponse, SmtpConfig } from '../src/types';
 
 // Inbucket is self-hosted, the suite needs INBUCKET_URL pointing to a running instance, eg.
 // docker run -p 9000:9000 -p 2500:2500 inbucket/inbucket
+
 const describeWithInbucket = process.env.INBUCKET_URL ? describe : describe.skip;
 
 describeWithInbucket("when using Inbucket", () => {
