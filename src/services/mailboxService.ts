@@ -73,6 +73,15 @@ abstract class MailboxService {
         return;
     }
 
+    /**
+     * Password of the current mailbox, needed to re-use it with setEmailAddress().
+     * Only available for providers with password protected mailboxes, eg. Mail.tm.
+     * @returns password, or undefined if the provider has none.
+     */
+    getPassword(): string | undefined {
+        return;
+    }
+
 }
 
 export default MailboxService;
