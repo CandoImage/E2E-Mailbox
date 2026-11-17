@@ -1,18 +1,24 @@
 import DeveloperMailService from './services/developerMailService';
 import EtherealMailService from './services/etherealMailService';
 import GuerrillaMailService from './services/guerrillaMailService';
+import InbucketService from './services/inbucketService';
 import MailDropService from './services/mailDropService';
 import MailboxService from './services/mailboxService';
-import { EmailResponse, MailboxProvider, SmtpConfig } from './types';
+import MailsacService from './services/mailsacService';
+import MailTmService from './services/mailTmService';
+import { EmailResponse, MailboxOptions, MailboxProvider, SmtpConfig } from './types';
+
+export type { EmailResponse, InbucketOptions, MailboxOptions, MailboxProvider, MailsacOptions, SmtpConfig } from './types';
+
+/**
+ * Providers that are not swapped for a public one when creating an address fails: they capture
+ * mail sent through their own SMTP server or need account specific configuration.
+ */
+const PROVIDERS_WITHOUT_FALLBACK: MailboxProvider[] = ['ETHEREAL', 'MAILSAC', 'INBUCKET'];
 
 export default class IntegrationMailbox {
 
-    private mailboxProviders: Record<MailboxProvider, MailboxService> = {
-        'GUERRILLA': new GuerrillaMailService(),
-        'DEVELOPER': new DeveloperMailService(),
-        'MAILDROP': new MailDropService(),
-        'ETHEREAL': new EtherealMailService()
-    }
+    private mailboxProviders: Record<MailboxProvider, () => MailboxService>;
 
     private mailbox: MailboxService;
 
@@ -22,38 +28,50 @@ export default class IntegrationMailbox {
      * Creates a mailbox session with the designated provider. By default,
      * MailDrop API will be used.
      * @param mailboxProvider
+     * @param options - provider specific configuration, eg. the Mailsac API key or the Inbucket URL.
      */
-    constructor(mailboxProvider: MailboxProvider = 'MAILDROP') {
-        this.mailbox = this.mailboxProviders[mailboxProvider];
+    constructor(mailboxProvider: MailboxProvider = 'MAILDROP', options: MailboxOptions = {}) {
+        this.mailboxProviders = {
+            'GUERRILLA': () => new GuerrillaMailService(),
+            'DEVELOPER': () => new DeveloperMailService(),
+            'MAILDROP': () => new MailDropService(),
+            'ETHEREAL': () => new EtherealMailService(),
+            'MAILTM': () => new MailTmService(),
+            'MAILSAC': () => new MailsacService(options.mailsac),
+            'INBUCKET': () => new InbucketService(options.inbucket),
+        };
+        this.mailbox = this.mailboxProviders[mailboxProvider]();
     }
 
     /**
      * Initialize a session and set the client with an email address.
      * If one email service is not working, the backup will be used
-     * automatically to prevent disruption. Ethereal has no backup, as the
-     * other providers can't capture mail sent through its SMTP server.
+     * automatically to prevent disruption. Ethereal, Mailsac and Inbucket have
+     * no backup, as the other providers can't capture mail sent through their
+     * SMTP server or don't use the configured account.
      * @returns email address
      */
     async createEmailAddress(): Promise<string> {
       try {
         return await this.mailbox.createEmailAddress();
       } catch (error) {
-        if (this.mailbox.PROVIDER === 'ETHEREAL') {
+        if (PROVIDERS_WITHOUT_FALLBACK.includes(this.mailbox.PROVIDER)) {
           throw error;
         }
         const newMailbox: MailboxProvider = this.mailbox.PROVIDER === 'MAILDROP'
           ? 'GUERRILLA'
           : 'MAILDROP';
-        this.mailbox = this.mailboxProviders[newMailbox];
+        this.mailbox = this.mailboxProviders[newMailbox]();
         // Attempt to create an email address again using a different provider.
         return this.mailbox.createEmailAddress();
       }
     }
 
     /**
-     * Re-use an existing email address.
+     * Re-use an existing email address, or pick a specific one. Mail.tm creates
+     * the account if it doesn't exist yet.
      * @param emailAddress
-     * @param password - only required by the Ethereal provider.
+     * @param password - only required by the Ethereal and Mail.tm providers.
      * @returns A `boolean` representing success or failure.
      */
     async setEmailAddress(emailAddress: string, password?: string): Promise<boolean> {
@@ -65,7 +83,7 @@ export default class IntegrationMailbox {
 
     /**
      * SMTP credentials the system under test has to send its mails through. Only
-     * available for the Ethereal provider, which captures mail instead of receiving it.
+     * available for the Ethereal and Inbucket providers, which capture mail instead of receiving it.
      * @returns SmtpConfig, or undefined for the other providers.
      */
     getSmtpConfig(): SmtpConfig | undefined {
@@ -73,7 +91,16 @@ export default class IntegrationMailbox {
     }
 
     /**
-     * Send an email to this mailbox. Only works for the DeveloperMail and Ethereal providers.
+     * Password of the current mailbox, needed to re-use it later with setEmailAddress().
+     * Only available for the Mail.tm provider, Ethereal exposes it via getSmtpConfig().
+     * @returns password, or undefined for the other providers.
+     */
+    getPassword(): string | undefined {
+        return this.mailbox.getPassword();
+    }
+
+    /**
+     * Send an email to this mailbox. Only works for the DeveloperMail, Ethereal and Inbucket providers.
      * @param subject
      * @param body
      * @returns A `boolean` representing success or failure.

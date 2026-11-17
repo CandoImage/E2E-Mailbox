@@ -14,6 +14,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Self-hosted catch-all SMTP server for the Inbucket test suite.
+    services:
+      inbucket:
+        image: inbucket/inbucket
+        ports:
+          - 9000:9000
+          - 2500:2500
+
     strategy:
       matrix:
         node-version: [20.x]
@@ -31,3 +39,7 @@ jobs:
     - run: yarn build
     - run: yarn lint
     - run: yarn test
+      env:
+        INBUCKET_URL: http://localhost:9000
+        # Optional, the Mailsac suite is skipped without it.
+        MAILSAC_API_KEY: ${{ secrets.MAILSAC_API_KEY }}
