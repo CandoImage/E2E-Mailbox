@@ -2,7 +2,7 @@
 
 # E2E Mailbox
 
-E2E test your email notification system using [DeveloperMail API](https://www.developermail.com/), [GuerrillaMail API](https://www.guerrillamail.com/), [MailDrop API](https://maildrop.cc/), [Mail.tm](https://mail.tm/), [Mail.gw](https://mail.gw/), [Mailsac](https://mailsac.com/), [Harakiri Mail](https://harakirimail.com/), [Ethereal](https://ethereal.email/), [Inbucket](https://inbucket.org/), and [Mailpit](https://mailpit.axllent.org/).
+E2E test your email notification system using [DeveloperMail API](https://www.developermail.com/), [GuerrillaMail API](https://www.guerrillamail.com/), [MailDrop API](https://maildrop.cc/), [Mail.tm](https://mail.tm/), [Mail.gw](https://mail.gw/), [Mailsac](https://mailsac.com/), [Harakiri Mail](https://harakirimail.com/), [testmail.app](https://testmail.app/), [Ethereal](https://ethereal.email/), [Inbucket](https://inbucket.org/), and [Mailpit](https://mailpit.axllent.org/).
 
 ## Description
 
@@ -13,7 +13,7 @@ A fully-typed and tested TS library for adding email notification testing to you
 - Fetching a reset password pin from an email
 - Ensuring your system sends the correct email after an action is committed on your website
 
-Configurable to use DeveloperMail, GuerrillaMail, MailDrop, Mail.tm, Mail.gw, Mailsac, Harakiri Mail, Ethereal, Inbucket, or Mailpit as the temporary mailbox provider. These are free services generously provided to create short-lived email addresses. If one provider is not working, the other will be used automatically to prevent disruption.
+Configurable to use DeveloperMail, GuerrillaMail, MailDrop, Mail.tm, Mail.gw, Mailsac, Harakiri Mail, testmail.app, Ethereal, Inbucket, or Mailpit as the temporary mailbox provider. These are free services generously provided to create short-lived email addresses. If one provider is not working, the other will be used automatically to prevent disruption.
 
 ## Providers
 
@@ -26,6 +26,7 @@ Configurable to use DeveloperMail, GuerrillaMail, MailDrop, Mail.tm, Mail.gw, Ma
 | [Mail.gw](https://mail.gw/) | `MAILGW` | ❌ | Same API as Mail.tm on other domains |
 | [Mailsac](https://mailsac.com/) | `MAILSAC` | ❌ | Requires a (free) API key, see [below](#using-mailsac) |
 | [Harakiri Mail](https://harakirimail.com/) | `HARAKIRI` | ❌ | Public inboxes, no API to delete mails, see [below](#using-harakiri-mail) |
+| [testmail.app](https://testmail.app/) | `TESTMAIL` | ❌ | Requires a (free) API key and namespace, no API to delete mails, see [below](#using-testmailapp) |
 | [Ethereal](https://ethereal.email/) | `ETHEREAL` | ✅ | Captures mail sent through its SMTP server instead of receiving it, see [below](#using-ethereal) |
 | [Inbucket](https://inbucket.org/) | `INBUCKET` | ✅ | Self-hosted, captures mail sent through its SMTP server, see [below](#using-inbucket) |
 | [Mailpit](https://mailpit.axllent.org/) | `MAILPIT` | ✅ | Self-hosted, captures mail sent through its SMTP server, see [below](#using-mailpit) |
@@ -50,7 +51,7 @@ yarn add e2e-mailbox
 ```js
 import E2EMailbox from 'e2e-mailbox';
 // This will create a new mailbox using MailDrop API as the provider.
-// Pass 'DEVELOPER', 'GUERRILLA', 'MAILTM', 'MAILGW', 'MAILSAC', 'HARAKIRI', 'ETHEREAL', 'INBUCKET' or 'MAILPIT'
+// Pass 'DEVELOPER', 'GUERRILLA', 'MAILTM', 'MAILGW', 'MAILSAC', 'HARAKIRI', 'TESTMAIL', 'ETHEREAL', 'INBUCKET' or 'MAILPIT'
 // to use another provider.
 const mailbox = new E2EMailbox();
 // This will generate a new email address for you to use in your tests
@@ -167,6 +168,22 @@ await mailbox.setEmailAddress('my-signup-test'); // my-signup-test@harakirimail.
 
 Inboxes are public: anyone knowing an address can read its mails, so use random addresses. The API has no way to
 delete mails, so `deleteEmailById()` returns `false`, and `fetchEmailList()` returns at most the newest 50 mails.
+
+#### Using testmail.app
+
+[testmail.app](https://testmail.app/) receives mail for `{namespace}.{tag}@inbox.testmail.app`: the namespace belongs
+to your account, any tag works without creating it first. It requires an API key and namespace (free plan available).
+Pass them as options or set the `TESTMAIL_API_KEY` and `TESTMAIL_NAMESPACE` environment variables:
+
+```js
+const mailbox = new E2EMailbox('TESTMAIL', { testmail: { apiKey: 'your-key', namespace: 'your-namespace' } });
+await mailbox.setEmailAddress('my-signup-test'); // your-namespace.my-signup-test@inbox.testmail.app
+```
+
+`setEmailAddress()` takes a tag or a full address of the configured namespace. testmail.app has no API to delete
+mails, they expire with the retention period of your plan, so `deleteEmailById()` returns `false`. To ignore older
+mails when re-using an address, pass `receivedAfter` to `waitForEmail()` or use a fresh tag. `fetchEmailList()` returns
+at most the newest 100 mails, bodies included.
 
 #### Using Inbucket
 

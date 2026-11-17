@@ -1,8 +1,15 @@
-export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP' | 'ETHEREAL' | 'MAILTM' | 'MAILGW' | 'MAILSAC' | 'HARAKIRI' | 'INBUCKET' | 'MAILPIT';
+export type MailboxProvider = 'DEVELOPER' | 'GUERRILLA' | 'MAILDROP' | 'ETHEREAL' | 'MAILTM' | 'MAILGW' | 'MAILSAC' | 'HARAKIRI' | 'TESTMAIL' | 'INBUCKET' | 'MAILPIT';
 
 export interface MailsacOptions {
     /** Mailsac API key, falls back to the MAILSAC_API_KEY environment variable. */
     apiKey?: string;
+}
+
+export interface TestmailOptions {
+    /** testmail.app API key, falls back to the TESTMAIL_API_KEY environment variable. */
+    apiKey?: string;
+    /** testmail.app namespace, falls back to the TESTMAIL_NAMESPACE environment variable. */
+    namespace?: string;
 }
 
 /**
@@ -26,6 +33,7 @@ export type MailpitOptions = SelfHostedOptions;
 
 export interface MailboxOptions {
     mailsac?: MailsacOptions;
+    testmail?: TestmailOptions;
     inbucket?: InbucketOptions;
     mailpit?: MailpitOptions;
 }

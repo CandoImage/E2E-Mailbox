@@ -49,3 +49,6 @@ jobs:
         MAILPIT_URL: http://localhost:8025
         # Optional, the Mailsac suite is skipped without it.
         MAILSAC_API_KEY: ${{ secrets.MAILSAC_API_KEY }}
+        # Optional, the testmail.app suite is skipped without them.
+        TESTMAIL_API_KEY: ${{ secrets.TESTMAIL_API_KEY }}
+        TESTMAIL_NAMESPACE: ${{ secrets.TESTMAIL_NAMESPACE }}
